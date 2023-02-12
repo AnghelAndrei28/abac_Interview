@@ -1,6 +1,7 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:interview/Pages/ShopsPage.dart';
+import 'package:intl/intl.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
 
 import '../Components/Model/Components.dart';
@@ -11,7 +12,6 @@ const _kAnimationDuration = Duration(milliseconds: 100);
 const _kPadding = EdgeInsets.symmetric(vertical: 70, horizontal: 24);
 
 class OverlayTest extends StatefulWidget {
-
   static const String route = 'save_note';
 
   @override
@@ -19,15 +19,13 @@ class OverlayTest extends StatefulWidget {
 }
 
 class _OverlayTestState extends State<OverlayTest> {
-
   DateTime _selectedDay = DateTime.now();
   int _currentStep = 0;
   List<DataRow> _shopList = [];
 
   final TextEditingController _searchTextEditingController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
-
 
   @override
   void initState() {
@@ -108,14 +106,15 @@ class _OverlayTestState extends State<OverlayTest> {
 
   @override
   Widget build(BuildContext context) {
-    final padding = MediaQuery
-        .of(context)
-        .viewInsets + _kPadding;
+    final padding = MediaQuery.of(context).viewInsets + _kPadding;
 
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
-    return AnimatedPadding(padding: padding,
+    int selectedCard = -1;
+
+    return AnimatedPadding(
+      padding: padding,
       duration: _kAnimationDuration,
       curve: Curves.ease,
       child: Material(
@@ -144,38 +143,62 @@ class _OverlayTestState extends State<OverlayTest> {
                 ],
               ),
               isActive: _currentStep >= 0,
-              state: _currentStep > 0
-                  ? StepState.complete
-                  : StepState.disabled,
+              state: _currentStep > 0 ? StepState.complete : StepState.disabled,
             ),
             Step(
               title: Text('Alege data'),
               content: Center(
                   child: Column(
-                    children: [
-                      WeeklyDatePicker(
-                        selectedDay: _selectedDay,
-                        changeDay: (value) => setState(() {
-                          _selectedDay = value;
-                        }),
-                        enableWeeknumberText: false,
-                        weeknumberColor: const Color(0xFF57AF87),
-                        weeknumberTextColor: Colors.white,
-                        backgroundColor: const Color(0xFF1A1A1A),
-                        weekdayTextColor: const Color(0xFF8A8A8A),
-                        digitsColor: Colors.white,
-                        selectedBackgroundColor: const Color(0xFF57AF87),
-                        daysInWeek: 7,
-                      ),
-
-                    ],
-                  )),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  WeeklyDatePicker(
+                    selectedDay: _selectedDay,
+                    changeDay: (value) => setState(() {
+                       if (value.isAtSameMomentAs(DateTime.now()) || value.isAfter(DateTime.now()))
+                        _selectedDay = value;
+                    }),
+                    enableWeeknumberText: false,
+                    weeknumberColor: const Color(0xFF57AF87),
+                    weeknumberTextColor: Colors.white,
+                    backgroundColor: const Color(0xFF1A1A1A),
+                    weekdayTextColor: const Color(0xFF8A8A8A),
+                    digitsColor: Colors.white,
+                    selectedBackgroundColor: const Color(0xFF57AF87),
+                    daysInWeek: 7,
+                  ),
+                  SizedBox(height: 5),
+                  Container(
+                    width: 0.8 * width,
+                    height: 0.4 * height,
+                    decoration: BoxDecoration(
+                        border: Border.all(),
+                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                    child: GridView.count(
+                      physics: ScrollPhysics(),
+                      crossAxisCount: 2,
+                      children: List.generate(8, (index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedCard = index;
+                            });
+                          },
+                          child: Card(
+                            color: selectedCard == index ? Colors.deepOrange : Colors.teal.withOpacity(0.5),
+                            child: Center(
+                                child: Text('${index + 10} - ${index + 11}')),
+                          ),
+                        );
+                      }),
+                    ),
+                  )
+                ],
+              )),
             )
           ],
         ),
-      ),);
-
-
+      ),
+    );
   }
 
   DataTable _createDataTable() {
@@ -186,9 +209,9 @@ class _OverlayTestState extends State<OverlayTest> {
       dataRowHeight: 80,
       showBottomBorder: true,
       headingTextStyle:
-      TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
       headingRowColor:
-      MaterialStateProperty.resolveWith((states) => Colors.black),
+          MaterialStateProperty.resolveWith((states) => Colors.black),
     );
   }
 
@@ -207,10 +230,14 @@ class _OverlayTestState extends State<OverlayTest> {
   }
 
   continued() {
-    _currentStep < 1 ? setState(() => _currentStep += 1) : Navigator.popAndPushNamed(context, ShopsPage.route);
+    _currentStep < 1
+        ? setState(() => _currentStep += 1)
+        : Navigator.popAndPushNamed(context, ShopsPage.route);
   }
 
   cancel() {
-    _currentStep > 0 ? setState(() => _currentStep -= 1) : Navigator.pop(context);
+    _currentStep > 0
+        ? setState(() => _currentStep -= 1)
+        : Navigator.pop(context);
   }
 }
