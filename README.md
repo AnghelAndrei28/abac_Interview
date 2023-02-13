@@ -1,16 +1,33 @@
-# interview
+# Coding Challenge by Anghel Andrei
+***
 
-A new Flutter project.
+Actual work: 40 hours
 
-## Getting Started
+***
+## Content and Flow
+***
 
-This project is a starting point for a Flutter application.
+* HomePageScreen: Landing Screen that contains an overview of the ship the user own, but also of the 
+components the user owns with their quality. From here, the user can see the Orders History by 
+pressing on the top right button or can create an order by pressing the button in the bottom right.
+* OrdersScreen: The user will firstly choose what components he wants to buy and then choose a
+date and an hour when we wants to get those components. After these details he will be forwarded
+to the shops screen.
+* ShopsScreen: In this page, the user can see what shops are available to complete his order, along 
+with the total price, rating and distance from him. The user can search for a specific shop or just
+filter them using the button in the right side of the search text box. After choosing a shop, he can
+place the order by clicking the top right button which will send the order to the Orders History.
+* OrdersHistory: The user can see his orders history list, each item containing some important 
+details and by pressing on a card, it will reveal the components of the order and the price at which
+they were bought according to the shop's prices
 
-A few resources to get you started if this is your first Flutter project:
+***
+## What I could do better
+***
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+* I would have modularized the code much more.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+* I would have used validators for each stage.
+
+* I would have created a better UI.
+
