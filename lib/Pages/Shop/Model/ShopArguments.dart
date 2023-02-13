@@ -1,7 +1,7 @@
-import 'package:interview/Pages/Shop/Model/ShopComponent.dart';
+import 'package:interview/Pages/Orders/Model/OrderComponent.dart';
 
 class ShopArguments {
-  List<ShopComponent> items;
+  List<OrderComponent> items;
   String date;
   String hour;
   String uid;

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'Shop/Model/ShopComponent.dart';
+import '../../Orders/Model/OrderComponent.dart';
 
 class Shop {
   final String name;
@@ -21,9 +21,9 @@ class Shop {
     _distance = random.nextDouble() * 1900 + 100;
   }
 
-  void calculateSum(List<ShopComponent> elements) {
+  void calculateSum(List<OrderComponent> elements) {
     _totalSum = 0;
-    for(ShopComponent component in elements) {
+    for(OrderComponent component in elements) {
       _totalSum += priceList[component.component.name]! * component.noProducts;
     }
   }

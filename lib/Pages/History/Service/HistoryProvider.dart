@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:interview/Pages/History.dart';
+import 'package:interview/Pages/History/Model/History.dart';
 
 class HistoryProvider extends ChangeNotifier {
-  List<History> _historyList = [];
+  final List<History> _historyList = [];
 
   void addElement(History element) {
     _historyList.add(element);

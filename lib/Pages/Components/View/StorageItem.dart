@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:interview/Pages/Components/Model/Components.dart';
 
 class StorageItem extends StatelessWidget {
-  StorageItem(
-      {required this.width, required this.height, required this.component});
+  const StorageItem(
+      {super.key, required this.width, required this.height, required this.component});
 
   final double width;
   final double height;
@@ -15,8 +15,8 @@ class StorageItem extends StatelessWidget {
       height: 0.1 * height,
       width: 0.4 * width,
       decoration: BoxDecoration(
-          color: Color(0xFF3F826D).withOpacity(0.3),
-          borderRadius: BorderRadius.all(Radius.circular(30))),
+          color: const Color(0xFF3F826D).withOpacity(0.3),
+          borderRadius: const BorderRadius.all(Radius.circular(30))),
       child: Row(
         children: [
           Container(
@@ -29,22 +29,22 @@ class StorageItem extends StatelessWidget {
               shape: BoxShape.circle,
             ),
           ),
-          Container(
+          SizedBox(
             width: 0.2 * width,
             child: Column(
               children: [
                 Text(
                   component.name,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  'Durability: ' + component.durability.toString(),
+                  'Durability: ${component.durability}',
                   style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: component.durability! > 75
+                      color: component.durability> 75
                           ? Colors.green
-                          : component.durability! > 40
+                          : component.durability> 40
                               ? Colors.yellow
                               : Colors.red),
                 )

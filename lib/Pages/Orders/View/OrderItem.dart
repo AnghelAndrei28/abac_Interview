@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../Components/Model/Components.dart';
 
-class ShopElement extends StatelessWidget {
-  ShopElement(
-      {required this.width, required this.height, required this.component});
+class OrderItem extends StatelessWidget {
+  const OrderItem(
+      {super.key, required this.width, required this.height, required this.component});
 
   final double width;
   final double height;
@@ -17,7 +17,7 @@ class ShopElement extends StatelessWidget {
       height: 0.07 * height,
       decoration: BoxDecoration(
         border: Border.all(),
-        borderRadius: BorderRadius.all(Radius.circular(5)),
+        borderRadius: const BorderRadius.all(Radius.circular(5)),
       ),
       child: Stack(children: [
         Image.asset("assets/${component.image}"),

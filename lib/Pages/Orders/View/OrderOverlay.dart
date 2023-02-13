@@ -1,32 +1,35 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
-import 'package:interview/Pages/ShopArguments.dart';
-import 'package:interview/Pages/ShopsPage.dart';
+import 'package:interview/Pages/Shop/Model/ShopArguments.dart';
+import 'package:interview/Pages/Shop/View/ShopsPage.dart';
 import 'package:intl/intl.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
 
-import '../Components/Model/Components.dart';
-import 'Model/ShopComponent.dart';
-import 'Model/ShopDropdownChoices.dart';
+import '../../Components/Model/Components.dart';
+import '../Model/OrderComponent.dart';
+import '../Model/OrderComponentsDropdown.dart';
 import 'package:uuid/uuid.dart';
 
 const _kAnimationDuration = Duration(milliseconds: 100);
 const _kPadding = EdgeInsets.symmetric(vertical: 70, horizontal: 24);
 
-class OverlayTest extends StatefulWidget {
+class OrderOverlay extends StatefulWidget {
   static const String route = 'save_note';
 
+  const OrderOverlay({super.key});
+
   @override
-  State<OverlayTest> createState() => _OverlayTestState();
+  State<OrderOverlay> createState() => _OrderOverlayState();
 }
 
-class _OverlayTestState extends State<OverlayTest> {
+class _OrderOverlayState extends State<OrderOverlay> {
   DateTime _selectedDay = DateTime.now();
   int _currentStep = 0;
   List<DataRow> _shopList = [];
-  List<ShopComponent> _shopComponentList = [];
+  final List<OrderComponent> _shopComponentList = [];
   var uuid = const Uuid();
   late String selectedTime;
+  int selectedCard = -1;
 
   final TextEditingController _searchTextEditingController =
       TextEditingController();
@@ -35,7 +38,7 @@ class _OverlayTestState extends State<OverlayTest> {
   @override
   void initState() {
     // TODO: implement initState
-    ShopDropdownChoices.setElements([
+    OrderComponentsDropdown.setElements([
       Components.fromTypeName("Guns"),
       Components.fromTypeName("Shields"),
       Components.fromTypeName("Generators"),
@@ -46,20 +49,20 @@ class _OverlayTestState extends State<OverlayTest> {
         CustomDropdown.search(
           hintText: 'Select component',
           controller: _searchTextEditingController,
-          items: ShopDropdownChoices.componentsList,
+          items: OrderComponentsDropdown.componentsList,
         ),
       ),
       DataCell(
         TextFormField(
           controller: _quantityController,
-          decoration: InputDecoration(hintText: "2"),
+          decoration: const InputDecoration(hintText: "2"),
           keyboardType: TextInputType.number,
         ),
       ),
-      DataCell(
+      const DataCell(
         Text(""),
       ),
-      DataCell(
+      const DataCell(
         Text(""),
       ),
       DataCell(
@@ -67,21 +70,21 @@ class _OverlayTestState extends State<OverlayTest> {
           onPressed: () {
             if (_quantityController.text != "" &&
                 _searchTextEditingController.text != "") {
-              ShopComponent chosenComponent;
+              OrderComponent chosenComponent;
               List<String> args = _searchTextEditingController.text.split(' ');
               switch (args[0]) {
                 case 'Shield':
-                  chosenComponent = ShopComponent(
+                  chosenComponent = OrderComponent(
                       component: Components.fromTypeName("Shields"),
                       noProducts: int.parse(_quantityController.text));
                   break;
                 case 'Generator':
-                  chosenComponent = ShopComponent(
+                  chosenComponent = OrderComponent(
                       component: Components.fromTypeName("Generators"),
                       noProducts: int.parse(_quantityController.text));
                   break;
                 default:
-                  chosenComponent = ShopComponent(
+                  chosenComponent = OrderComponent(
                       component: Components.fromTypeName("Guns"),
                       noProducts: int.parse(_quantityController.text));
               }
@@ -100,7 +103,7 @@ class _OverlayTestState extends State<OverlayTest> {
                           Text(chosenComponent.component.price.toString())),
                       DataCell(Text(chosenComponent.totalPrice)),
                       DataCell(IconButton(
-                          onPressed: () {}, icon: Icon(Icons.delete))),
+                          onPressed: () {}, icon: const Icon(Icons.delete))),
                     ],
                   ),
                   ..._shopList
@@ -124,8 +127,6 @@ class _OverlayTestState extends State<OverlayTest> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
-    int selectedCard = -1;
-
     return AnimatedPadding(
       padding: padding,
       duration: _kAnimationDuration,
@@ -142,7 +143,7 @@ class _OverlayTestState extends State<OverlayTest> {
           steps: [
             //TODO: Sa fac widget-uri separate pe taskuri
             Step(
-              title: Text('Creaza deviz'),
+              title: const Text('Create order'),
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -159,7 +160,7 @@ class _OverlayTestState extends State<OverlayTest> {
               state: _currentStep > 0 ? StepState.complete : StepState.disabled,
             ),
             Step(
-              title: Text('Alege data'),
+              title: const Text('Choose date'),
               content: Center(
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -168,7 +169,10 @@ class _OverlayTestState extends State<OverlayTest> {
                     selectedDay: _selectedDay,
                     changeDay: (value) => setState(() {
                       if (value.isAtSameMomentAs(DateTime.now()) ||
-                          value.isAfter(DateTime.now())) _selectedDay = value;
+                          value.isAfter(DateTime.now())) {
+                        _selectedDay = value;
+                        selectedCard = -1;
+                      }
                     }),
                     enableWeeknumberText: false,
                     weeknumberColor: const Color(0xFF57AF87),
@@ -179,25 +183,23 @@ class _OverlayTestState extends State<OverlayTest> {
                     selectedBackgroundColor: const Color(0xFF57AF87),
                     daysInWeek: 7,
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Container(
                     width: 0.8 * width,
                     height: 0.4 * height,
                     decoration: BoxDecoration(
                         border: Border.all(),
-                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                        borderRadius: const BorderRadius.all(Radius.circular(5))),
                     child: GridView.count(
-                      physics: ScrollPhysics(),
+                      physics: const ScrollPhysics(),
                       crossAxisCount: 2,
                       children: List.generate(8, (index) {
                         String time = '${index + 10}:00 - ${index + 11}:00';
-
-                        //I don't get why it doesn't change
                         return GestureDetector(
                           onTap: () {
                             selectedTime = time;
                             setState(() {
-                              selectedCard = index;
+                              checkOption(index);
                             });
                           },
                           child: Card(
@@ -230,7 +232,7 @@ class _OverlayTestState extends State<OverlayTest> {
       dataRowHeight: 80,
       showBottomBorder: true,
       headingTextStyle:
-          TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
       headingRowColor:
           MaterialStateProperty.resolveWith((states) => Colors.black),
     );
@@ -238,11 +240,11 @@ class _OverlayTestState extends State<OverlayTest> {
 
   List<DataColumn> _createColumns() {
     return [
-      DataColumn(label: Text('Component')),
-      DataColumn(label: Text('Quantity')),
-      DataColumn(label: Text('Price/Unit')),
-      DataColumn(label: Text('Total')),
-      DataColumn(label: Text('')),
+      const DataColumn(label: Text('Component')),
+      const DataColumn(label: Text('Quantity')),
+      const DataColumn(label: Text('Price/Unit')),
+      const DataColumn(label: Text('Total')),
+      const DataColumn(label: Text('')),
     ];
   }
 
@@ -274,6 +276,12 @@ class _OverlayTestState extends State<OverlayTest> {
   void deleteEntry(DataRow entry) {
     setState(() {
       _shopList.removeWhere((element) => element == entry);
+    });
+  }
+
+  void checkOption(int index) {
+    setState(() {
+      selectedCard = index;
     });
   }
 }

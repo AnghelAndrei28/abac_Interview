@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:interview/Pages/CustomPopupRoute.dart';
-import 'package:interview/Pages/HistoryProvider.dart';
+import 'package:interview/Pages/History/Service/HistoryProvider.dart';
 import 'package:interview/Pages/HomePageScreen.dart';
-import 'package:interview/Pages/RouterService.dart';
-import 'package:interview/Pages/Shop/OverlayTest.dart';
+import 'package:interview/Pages/Services/RouterService.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -26,7 +24,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         onGenerateRoute: RouterService.generateRoute,
-        home: HomePageScreen()
+        initialRoute: HomePageScreen.route,
       ),
     );
   }
