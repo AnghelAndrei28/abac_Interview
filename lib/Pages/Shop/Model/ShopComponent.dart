@@ -9,4 +9,9 @@ class ShopComponent {
   int noProducts;
   Components component;
 
+  void setPrice(double price) {
+    component.price = price;
+    totalPrice = (noProducts * component.getPrice()).toStringAsFixed(2);
+  }
+
 }

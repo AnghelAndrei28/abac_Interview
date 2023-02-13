@@ -15,7 +15,7 @@ class RouterService {
           builder: (_) => OverlayTest(),
         );
       case ShopsPage.route:
-        return MaterialPageRoute(builder: (_) => ShopsPage());
+        return MaterialPageRoute(builder: (context) => ShopsPage(), settings: settings);
       default:
         return MaterialPageRoute(builder: (_) => HomePageScreen());
     }

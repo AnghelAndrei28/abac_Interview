@@ -1,5 +1,6 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:interview/Pages/ShopArguments.dart';
 import 'package:interview/Pages/ShopsPage.dart';
 import 'package:intl/intl.dart';
 import 'package:weekly_date_picker/weekly_date_picker.dart';
@@ -7,6 +8,7 @@ import 'package:weekly_date_picker/weekly_date_picker.dart';
 import '../Components/Model/Components.dart';
 import 'Model/ShopComponent.dart';
 import 'Model/ShopDropdownChoices.dart';
+import 'package:uuid/uuid.dart';
 
 const _kAnimationDuration = Duration(milliseconds: 100);
 const _kPadding = EdgeInsets.symmetric(vertical: 70, horizontal: 24);
@@ -22,6 +24,9 @@ class _OverlayTestState extends State<OverlayTest> {
   DateTime _selectedDay = DateTime.now();
   int _currentStep = 0;
   List<DataRow> _shopList = [];
+  List<ShopComponent> _shopComponentList = [];
+  var uuid = const Uuid();
+  late String selectedTime;
 
   final TextEditingController _searchTextEditingController =
       TextEditingController();
@@ -63,7 +68,8 @@ class _OverlayTestState extends State<OverlayTest> {
             if (_quantityController.text != "" &&
                 _searchTextEditingController.text != "") {
               ShopComponent chosenComponent;
-              switch (_searchTextEditingController.text.split(' ')[0]) {
+              List<String> args = _searchTextEditingController.text.split(' ');
+              switch (args[0]) {
                 case 'Shield':
                   chosenComponent = ShopComponent(
                       component: Components.fromTypeName("Shields"),
@@ -79,22 +85,29 @@ class _OverlayTestState extends State<OverlayTest> {
                       component: Components.fromTypeName("Guns"),
                       noProducts: int.parse(_quantityController.text));
               }
-              print(chosenComponent.component.name);
+
+              chosenComponent.setPrice(double.parse(args[2]));
+
+              _shopComponentList.add(chosenComponent);
+
               setState(() {
                 _shopList = [
-                  DataRow(cells: [
-                    DataCell(Text(chosenComponent.component.name)),
-                    DataCell(Text(chosenComponent.noProducts.toString())),
-                    DataCell(Text(chosenComponent.component.price.toString())),
-                    DataCell(Text(chosenComponent.totalPrice)),
-                    DataCell(
-                        IconButton(onPressed: () {}, icon: Icon(Icons.delete))),
-                  ]),
+                  DataRow(
+                    cells: [
+                      DataCell(Text(chosenComponent.component.name)),
+                      DataCell(Text(chosenComponent.noProducts.toString())),
+                      DataCell(
+                          Text(chosenComponent.component.price.toString())),
+                      DataCell(Text(chosenComponent.totalPrice)),
+                      DataCell(IconButton(
+                          onPressed: () {}, icon: Icon(Icons.delete))),
+                    ],
+                  ),
                   ..._shopList
                 ];
               });
             } else {
-              print("Sper ca nu printezi");
+              //TODO: Handle it
             }
           },
           icon: const Icon(Icons.add_circle_outline_rounded),
@@ -154,8 +167,8 @@ class _OverlayTestState extends State<OverlayTest> {
                   WeeklyDatePicker(
                     selectedDay: _selectedDay,
                     changeDay: (value) => setState(() {
-                       if (value.isAtSameMomentAs(DateTime.now()) || value.isAfter(DateTime.now()))
-                        _selectedDay = value;
+                      if (value.isAtSameMomentAs(DateTime.now()) ||
+                          value.isAfter(DateTime.now())) _selectedDay = value;
                     }),
                     enableWeeknumberText: false,
                     weeknumberColor: const Color(0xFF57AF87),
@@ -177,16 +190,22 @@ class _OverlayTestState extends State<OverlayTest> {
                       physics: ScrollPhysics(),
                       crossAxisCount: 2,
                       children: List.generate(8, (index) {
+                        String time = '${index + 10}:00 - ${index + 11}:00';
                         return GestureDetector(
                           onTap: () {
+                            selectedTime = time;
                             setState(() {
                               selectedCard = index;
                             });
                           },
                           child: Card(
-                            color: selectedCard == index ? Colors.deepOrange : Colors.teal.withOpacity(0.5),
+                            color: selectedCard == index
+                                ? Colors.deepOrange
+                                : Colors.teal.withOpacity(0.5),
                             child: Center(
-                                child: Text('${index + 10} - ${index + 11}')),
+                                child: Text(
+                              time,
+                            )),
                           ),
                         );
                       }),
@@ -230,14 +249,29 @@ class _OverlayTestState extends State<OverlayTest> {
   }
 
   continued() {
+    DateFormat formatter;
     _currentStep < 1
         ? setState(() => _currentStep += 1)
-        : Navigator.popAndPushNamed(context, ShopsPage.route);
+        : {
+            formatter = DateFormat('yyyy-MM-dd'),
+            Navigator.popAndPushNamed(context, ShopsPage.route,
+                arguments: ShopArguments(
+                    items: _shopComponentList,
+                    date: formatter.format(_selectedDay),
+                    hour: selectedTime,
+                    uid: uuid.v1()))
+          };
   }
 
   cancel() {
     _currentStep > 0
         ? setState(() => _currentStep -= 1)
         : Navigator.pop(context);
+  }
+
+  void deleteEntry(DataRow entry) {
+    setState(() {
+      _shopList.removeWhere((element) => element == entry);
+    });
   }
 }

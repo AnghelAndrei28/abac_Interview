@@ -10,7 +10,7 @@ class ShopDropdownChoices {
   static void setElements(
       List<Components> components) {
     for(Components element in components) {
-      componentsList.add("${element.name} - ${element.price}\$");
+      componentsList.add("${element.name} - ${element.price} \$");
     }
   }
 }
