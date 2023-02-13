@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:interview/Pages/History.dart';
+import 'package:interview/Pages/HistoryProvider.dart';
 import 'package:interview/Pages/ShopArguments.dart';
 import 'package:interview/Pages/ShopWidget.dart';
+import 'package:provider/provider.dart';
 
 import 'Shop.dart';
+
+enum SortType { price, rating, distance }
 
 class ShopsPage extends StatefulWidget {
   static const String route = 'shops_list';
@@ -25,6 +30,8 @@ class _ShopsPageState extends State<ShopsPage> {
 
   final TextEditingController _searchController = TextEditingController();
 
+  int shopSelected = -1;
+
   @override
   void initState() {
     displayedShops = shopNames;
@@ -42,6 +49,14 @@ class _ShopsPageState extends State<ShopsPage> {
       appBar: AppBar(
         title: Text("Choose the shop"),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () {
+                placeOrder(context, History(shop: displayedShops.elementAt(shopSelected), args: args));
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_forward))
+        ],
       ),
       body: Container(
         child: Column(
@@ -88,7 +103,40 @@ class _ShopsPageState extends State<ShopsPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(padding: EdgeInsets.only(top: 6, right: 10), child: IconButton(onPressed: () {}, icon: Icon(Icons.filter_list))),
+                  Container(
+                      padding: EdgeInsets.only(top: 6, right: 10),
+                      child:
+                          // IconButton(
+                          //     onPressed: () {}, icon: Icon(Icons.filter_list)),
+                          PopupMenuButton<SortType>(
+                        icon: Icon(Icons.filter_list),
+                        onSelected: (sortType) {
+                          switch (sortType) {
+                            case SortType.rating:
+                              sortByRating();
+                              break;
+                            case SortType.price:
+                              sortByPrice();
+                              break;
+                            case SortType.distance:
+                              sortByDistance();
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            child: Text('Price filter'),
+                            value: SortType.price,
+                          ),
+                          const PopupMenuItem(
+                            child: Text('Distance filter'),
+                            value: SortType.distance,
+                          ),
+                          const PopupMenuItem(
+                            child: Text('Rating filter'),
+                            value: SortType.rating,
+                          ),
+                        ],
+                      )),
                 ],
               )
             ]),
@@ -97,25 +145,34 @@ class _ShopsPageState extends State<ShopsPage> {
             ),
             Expanded(
                 child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 5),
-                    padding: EdgeInsets.only(top: 10),
-                    decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.all(Radius.circular(5))),
-                  child: GridView.builder(
-                      physics: ScrollPhysics(),
-                      itemCount: displayedShops.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2),
-                      itemBuilder: (context, index) {
-                        displayedShops[index].calculateSum(args.items);
-                        return ShopWidget(
+              margin: EdgeInsets.symmetric(horizontal: 5),
+              padding: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                  border: Border.all(),
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              child: GridView.builder(
+                  physics: ScrollPhysics(),
+                  itemCount: displayedShops.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2),
+                  itemBuilder: (context, index) {
+                    displayedShops[index].calculateSum(args.items);
+                    return GestureDetector(
+                      onTap: () {
+                        checkOption(index);
+                      },
+                      child: Card(
+                        margin:
+                            EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                        color: shopSelected != index ? Colors.purple : Colors.red,
+                        child: ShopWidget(
                             shop: displayedShops[index],
                             width: width,
-                            height: height);
-                      }),
-                ))
+                            height: height),
+                      ),
+                    );
+                  }),
+            ))
           ],
         ),
       ),
@@ -131,6 +188,36 @@ class _ShopsPageState extends State<ShopsPage> {
 
     setState(() {
       displayedShops = suggestions;
+    });
+  }
+
+  void sortByRating() {
+    setState(() {
+      displayedShops.sort((prev, next) => next.rating.compareTo(prev.rating));
+    });
+  }
+
+  void sortByPrice() {
+    setState(() {
+      displayedShops.sort(
+          (prev, next) => prev.getTotalSum().compareTo(next.getTotalSum()));
+    });
+  }
+
+  void sortByDistance() {
+    setState(() {
+      displayedShops.sort(
+          (prev, next) => prev.getDistance().compareTo(next.getDistance()));
+    });
+  }
+
+  void placeOrder(BuildContext context, History element) {
+    Provider.of<HistoryProvider>(context, listen: false).addElement(element);
+  }
+
+  void checkOption(int index) {
+    setState(() {
+      shopSelected = index;
     });
   }
 }

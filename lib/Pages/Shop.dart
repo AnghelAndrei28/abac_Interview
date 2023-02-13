@@ -7,9 +7,8 @@ class Shop {
   late double rating;
   double _totalSum = 0;
   late Map<String, double> priceList;
-  late double latitude;
-  late double longitude;
   late String imageUrl;
+  late double _distance;
 
   Shop({required this.name}) {
     final random = Random();
@@ -19,8 +18,7 @@ class Shop {
       'Generator': random.nextDouble() * 3000,
       'Gun': random.nextDouble() * 2000
     };
-    latitude = random.nextDouble() * 180 - 90;
-    longitude = random.nextDouble() * 180 - 90;
+    _distance = random.nextDouble() * 1900 + 100;
   }
 
   void calculateSum(List<ShopComponent> elements) {
@@ -35,6 +33,6 @@ class Shop {
   }
 
   double getDistance() {
-    return 0;
+    return _distance;
   }
 }

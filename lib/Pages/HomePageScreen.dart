@@ -7,11 +7,8 @@ import 'package:interview/Pages/Components/Model/Components.dart';
 import 'package:interview/Pages/Components/Model/FactoryComponents.dart';
 import 'package:interview/Pages/Components/View/EquipedItem.dart';
 import 'package:interview/Pages/Components/View/StorageItem.dart';
-import 'package:interview/Pages/Shop/Model/ShopComponent.dart';
-import 'package:interview/Pages/Shop/Model/ShopDropdownChoices.dart';
-import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'package:interview/Pages/HistoryScreen.dart';
 import 'package:interview/Pages/Shop/OverlayTest.dart';
-import 'package:weekly_date_picker/weekly_date_picker.dart';
 
 class HomePageScreen extends StatefulWidget {
 
@@ -49,6 +46,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text("HomePage"),
+        actions: [
+          IconButton(onPressed: () {
+            Navigator.of(context).pushNamed(HistoryScreen.route);
+          }, icon: Icon(Icons.history))
+        ],
       ),
       body: Container(
         height: 0.8 * height,

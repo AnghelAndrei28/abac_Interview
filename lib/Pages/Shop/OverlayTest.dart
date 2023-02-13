@@ -191,6 +191,8 @@ class _OverlayTestState extends State<OverlayTest> {
                       crossAxisCount: 2,
                       children: List.generate(8, (index) {
                         String time = '${index + 10}:00 - ${index + 11}:00';
+
+                        //I don't get why it doesn't change
                         return GestureDetector(
                           onTap: () {
                             selectedTime = time;
